@@ -1,3 +1,4 @@
+let fetchData = [];
 const fetchCategories = () => {
   const url = `https://openapi.programming-hero.com/api/news/categories`;
   fetch(url)
@@ -21,7 +22,10 @@ const fetchCategoryNews = (category_id, category_name) => {
   const url = `https://openapi.programming-hero.com/api/news/category/${category_id}`;
   fetch(url)
     .then((res) => res.json())
-    .then((data) => displayAllNews(data.data, category_name));
+    .then((data) => {
+      fetchData = data.data;
+      displayAllNews(data.data, category_name);
+    });
 };
 
 const displayAllNews = (data, category_name) => {
@@ -32,7 +36,7 @@ const displayAllNews = (data, category_name) => {
   const newsContainer = document.getElementById('all-news');
   newsContainer.innerHTML = '';
   data.forEach((singleNews) => {
-    const { _id, image_url, details, author, total_view } = singleNews;
+    const { _id, title, image_url, details, author, total_view, others_info } = singleNews;
 
     newsContainer.innerHTML += `
     <div class="card mb-3">
@@ -42,7 +46,8 @@ const displayAllNews = (data, category_name) => {
         </div>
         <div class="col-md-8 d-flex flex-column">
           <div class="card-body">
-            <h5 class="card-title">${singleNews.title}</h5>
+            <h5 class="card-title">${title}</h5>
+            <span class="badge text-bg-warning">${others_info.is_trending ? 'Trending' : ''}</span>
             <p class="card-text">
               ${details.slice(0, 300)}...
             </p>
@@ -51,13 +56,13 @@ const displayAllNews = (data, category_name) => {
             <div class="d-flex gap-2">
               <img src=${author.img} class="img-fluid rounded-circle" alt="..." height="40" width="40" />
               <div>
-                <p class="p-0 m-0">${author.name}</p>
-                <p class="p-0 m-0">${author.published_date}</p>
+                <p class="p-0 m-0">${author.name ? author.name : 'Not available'}</p>
+                <p class="p-0 m-0">${moment(author.published_date).format('MMMM d, YYYY')}</p>
               </div>
             </div>  
             <div class="d-flex align-items-center gap-2">
                 <i class="fas fa-eye"></i>
-                <p class="p-0 m-0">${total_view}</p>
+                <p class="p-0 m-0">${total_view ? total_view : 0}</p>
             </div>
             <div>
                 <i class="fas fa-star"></i>
@@ -87,10 +92,7 @@ const fetchNewsDetails = (news_id) => {
 };
 
 const showNewsDetails = (newsDetail) => {
-  console.log(newsDetail);
   const { _id, title, image_url, details, author, total_view } = newsDetail;
-  console.log(title);
-
   const modalTitle = document.getElementById('newsDetailsLabel');
   const modalBody = document.getElementById('modal-body');
   modalTitle.innerText = title;
@@ -111,7 +113,7 @@ const showNewsDetails = (newsDetail) => {
               <img src=${author.img} class="img-fluid rounded-circle" alt="..." height="40" width="40" />
               <div>
                 <p class="p-0 m-0">${author.name}</p>
-                <p class="p-0 m-0">${author.published_date}</p>
+                <p class="p-0 m-0">${moment(author.published_date).format('MMMM d, YYYY')}</p>
               </div>
             </div>  
             <div class="d-flex align-items-center gap-2">
@@ -128,4 +130,16 @@ const showNewsDetails = (newsDetail) => {
       </div>
     </div>
   `;
+};
+
+const showTrending = () => {
+  const trendingNews = fetchData.filter((singleData) => singleData.others_info.is_trending === true);
+  const category_name = document.getElementById('category-name').innerText;
+  displayAllNews(trendingNews, category_name);
+};
+
+const showTodaysPick = () => {
+  const todaysPick = fetchData.filter((singleData) => singleData.others_info.is_todays_pick === true);
+  const category_name = document.getElementById('category-name').innerText;
+  displayAllNews(todaysPick, category_name);
 };
