@@ -77,9 +77,23 @@
       <!-- sorting options section ends -->
 
       <!-- showing all news section -->
-      <section id="all-news" class="container mt-4">
-        
-      </section>
+      <section id="all-news" class="container mt-4"></section>
+
+      <!-- Modal goes here -->
+      <div class="modal fade" id="newsDetails" tabindex="-1" aria-labelledby="newsDetailsLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="newsDetailsLabel"></h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script
